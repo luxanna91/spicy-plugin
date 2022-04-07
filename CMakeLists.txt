@@ -135,7 +135,7 @@ include(BroPlugin)
 set(CMAKE_C_FLAGS ${save_c_flags})
 set(CMAKE_CXX_FLAGS ${save_cxx_flags})
 
-zeek_plugin_begin(_Zeek Spicy)
+zeek_plugin_begin(Zeek Spicy)
 
 if (SPICY_HAVE_TOOLCHAIN)
     zeek_plugin_cc(src/driver.cc)
@@ -181,6 +181,16 @@ endif ()
 
 spicy_include_directories(${_plugin_lib} PRIVATE)
 set_property(TARGET ${_plugin_lib} PROPERTY ENABLE_EXPORTS true)
+
+# Remove any old Zeek_Spicy.so left-over from previous versions.
+get_property(plugin_dir TARGET ${_plugin_lib} PROPERTY LIBRARY_OUTPUT_DIRECTORY)
+set(old_plugin_location
+    "${plugin_dir}/_Zeek-Spicy.${HOST_ARCHITECTURE}${CMAKE_SHARED_MODULE_SUFFIX}")
+add_custom_command(
+    TARGET ${_plugin_lib}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove -f "${old_plugin_location}"
+    COMMENT "")
 
 ####
 #### Prepare the plugin build directory so that it resembles our installation layout.
