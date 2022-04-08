@@ -55,7 +55,8 @@ bool PacketAnalyzer::AnalyzePacket(size_t len, const uint8_t* data, ::zeek::Pack
         else
             return true;
     } catch ( const spicy::rt::ParseError& e ) {
-        reporter::weird(hilti::rt::fmt("packet analyzer: %s", e.what()));
+        STATE_DEBUG_MSG(hilti::rt::fmt("parse error, triggering analyzer violation: %s", e.what()));
+        spicy::zeek::compat::Analyzer_AnalyzerViolation(packet->session, _state.cookie().analyzer, e.what());
         _state.reset();
         return false;
     } catch ( const hilti::rt::Exception& e ) {

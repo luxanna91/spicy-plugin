@@ -1,0 +1,24 @@
+# @TEST-EXEC: HILTI_DEBUG=zeek ${ZEEK} -r ${TRACES}/ssh-single-conn.trace test.evt %INPUT
+# @TEST-EXEC: btest-diff dpd.log
+#
+# @TEST-DOC: Trigger parse error after confirmation, should be recorded in dpd.log
+
+module SSH;
+
+import zeek;
+
+public type Banner = unit {
+    magic   : /SSH-/ { zeek::confirm_protocol(); }
+    version : /[^-]*/;
+    dash    : /-/;
+    software: /KAPUTT/;
+};
+
+# @TEST-START-FILE test.evt
+
+protocol analyzer spicy::SSH over TCP:
+    parse originator with SSH::Banner,
+    port 22/tcp,
+    replaces SSH;
+
+# @TEST-END-FILE

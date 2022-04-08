@@ -97,7 +97,8 @@ bool FileAnalyzer::Process(int len, const u_char* data) {
         hilti::rt::context::CookieSetter _(&_state.cookie());
         _state.process(len, reinterpret_cast<const char*>(data));
     } catch ( const spicy::rt::ParseError& e ) {
-        reporter::weird(file, e.what());
+        STATE_DEBUG_MSG(hilti::rt::fmt("parse error, triggering analyzer violation: %s", e.what()));
+        spicy::zeek::compat::Analyzer_AnalyzerViolation(_state.cookie().analyzer, e.what());
     } catch ( const hilti::rt::Exception& e ) {
         STATE_DEBUG_MSG(e.what());
         reporter::analyzerError(_state.cookie().analyzer, e.description(),
@@ -112,7 +113,8 @@ void FileAnalyzer::Finish() {
         hilti::rt::context::CookieSetter _(&_state.cookie());
         _state.finish();
     } catch ( const spicy::rt::ParseError& e ) {
-        reporter::weird(_state.cookie().analyzer->GetFile(), e.what());
+        STATE_DEBUG_MSG(hilti::rt::fmt("parse error, triggering analyzer violation: %s", e.what()));
+        spicy::zeek::compat::Analyzer_AnalyzerViolation(_state.cookie().analyzer, e.what());
     } catch ( const hilti::rt::Exception& e ) {
         reporter::analyzerError(_state.cookie().analyzer, e.description(),
                                 e.location()); // this sets Zeek to skip sending any further input

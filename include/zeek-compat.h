@@ -122,6 +122,17 @@ inline auto Analyzer_AnalyzerViolation(::zeek::analyzer::Analyzer* analyzer, con
                                        const char* data = nullptr, int len = 0) {
     analyzer->AnalyzerViolation(reason, data, len);
 }
+
+inline auto Analyzer_AnalyzerViolation(::zeek::file_analysis::Analyzer* analyzer, const char* reason,
+                                       const char* data = nullptr, int len = 0) {
+    // ::zeek::reporter->Weird(analyzer->GetFile(), reason);
+}
+
+inline auto Analyzer_AnalyzerViolation(::zeek::session::Session* session, ::zeek::packet_analysis::Analyzer* analyzer,
+                                       const char* reason, const char* data = nullptr, int len = 0) {
+    analyzer->AnalyzerViolation(reason, session, data, len);
+}
+
 #else
 inline auto Analyzer_AnalyzerConfirmation(::zeek::analyzer::Analyzer* analyzer, ::zeek::analyzer::Tag tag) {
     analyzer->ProtocolConfirmation(tag);
@@ -131,6 +142,17 @@ inline auto Analyzer_AnalyzerViolation(::zeek::analyzer::Analyzer* analyzer, con
                                        const char* data = nullptr, int len = 0) {
     analyzer->ProtocolViolation(reason, data, len);
 }
+
+inline auto Analyzer_AnalyzerViolation(::zeek::file_analysis::Analyzer* analyzer, const char* reason,
+                                       const char* data = nullptr, int len = 0) {
+    // ::zeek::reporter->Weird(analyzer->GetFile(), reason);
+}
+
+inline auto Analyzer_AnalyzerViolation(::zeek::session::Session* session, ::zeek::packet_analysis::Analyzer* analyzer,
+                                       const char* reason, const char* data = nullptr, int len = 0) {
+    // ::zeek::reporter->Weird(analyzer->GetFile(), hilti::rt::fmt("packet analyzer: %s", reason));
+}
+
 #endif
 
 #if ZEEK_VERSION_NUMBER >= 40100 // Zeek >= 4.1
